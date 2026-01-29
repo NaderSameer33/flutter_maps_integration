@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_maps_intgration/widgets/google_map_item.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
@@ -23,16 +24,8 @@ class _FlutterGoogleMapsIntegrationState
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: GoogleMap(
-          onMapCreated: (controller) {},
-          initialCameraPosition: CameraPosition(
-            zoom: 16,
-            target: LatLng(
-              31.12397562358649,
-              31.28898459645746,
-            ),
-          ),
-        ),
+        body:GoogleMapItem()
+
       ),
     );
   }
