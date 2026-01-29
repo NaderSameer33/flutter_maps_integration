@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_maps_intgration/models/map_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapItem extends StatefulWidget {
@@ -13,9 +14,11 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   late GoogleMapController _controller;
 
   String mapStyle = '';
+  Set<Marker> markers = {};
   @override
   void initState() {
     super.initState();
+    createMarker();
     createMapStyle();
     cameraPosition = CameraPosition(
       zoom: 13,
@@ -31,6 +34,18 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
       context,
     ).loadString('assets/lotties/style.json');
     setState(() {});
+  }
+
+  void createMarker() {
+    var myMarker = list
+        .map(
+          (e) => Marker(
+            markerId: MarkerId(e.id),
+            position: e.latLng,
+          ),
+        )
+        .toSet();
+    markers.addAll(myMarker);
   }
 
   Future<void> moveToNabrou() async {
@@ -50,6 +65,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
       body: Stack(
         children: [
           GoogleMap(
+            markers: markers,
             style: mapStyle,
             onMapCreated: (controller) {
               _controller = controller;
