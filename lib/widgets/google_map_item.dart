@@ -11,6 +11,7 @@ class GoogleMapItem extends StatefulWidget {
 class _GoogleMapItemState extends State<GoogleMapItem> {
   late CameraPosition cameraPosition;
   late GoogleMapController _controller;
+  late String style;
   @override
   void initState() {
     super.initState();
@@ -23,8 +24,15 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     );
   }
 
+  void createMapStyle() async {
+    var nightMapStyle = await DefaultAssetBundle.of(
+      context,
+    ).loadString('assets/lotties/style.json');
+    _controller.setMapStyle(nightMapStyle);
+  }
+
   Future<void> moveToNabrou() async {
-    await _controller.moveCamera(
+    await _controller.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           zoom: 16,
@@ -40,9 +48,10 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
       body: Stack(
         children: [
           GoogleMap(
+            mapType: MapType.normal,
             onMapCreated: (controller) {
               _controller = controller;
-              setState(() {});
+              createMapStyle();
             },
             initialCameraPosition: cameraPosition,
           ),

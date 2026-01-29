@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps_intgration/widgets/google_map_item.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(const FlutterGoogleMapsIntegration());
