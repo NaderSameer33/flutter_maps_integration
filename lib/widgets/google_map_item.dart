@@ -18,19 +18,20 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   String mapStyle = '';
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
+  Set<Polygon> polygons = {};
+  Set<Circle> circles = {};
 
   @override
   void initState() {
     super.initState();
     createPlyLine();
     createMarker();
+    createCircle();
     createMapStyle();
+    createPolygon();
     cameraPosition = CameraPosition(
-      zoom: 1,
-      target: LatLng(
-        31.12397562358649,
-        31.28898459645746,
-      ),
+      zoom: 13,
+      target: LatLng(31.105580602929177, 30.943923665823245),
     );
   }
 
@@ -100,6 +101,8 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
       body: Stack(
         children: [
           GoogleMap(
+            circles: circles,
+            polygons: polygons,
             polylines: polylines,
             zoomControlsEnabled: false,
             markers: markers,
@@ -121,6 +124,38 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
         ],
       ),
     );
+  }
+
+  void createPolygon() {
+    Polygon polygon = Polygon(
+      holes: [
+        [
+          LatLng(31.11199007905391, 31.282154831111928),
+          LatLng(31.10237207173203, 31.286728332670183),
+        ],
+      ],
+      fillColor: Colors.black.withValues(alpha: .6),
+      polygonId: PolygonId('nesha&nabarua&dirin'),
+      points: [
+        LatLng(31.1268146302939, 31.295022019826124),
+        LatLng(31.09624484222557, 31.299485215401365),
+        LatLng(31.097420785306483, 31.26515294174565),
+      ],
+    );
+    polygons.add(polygon);
+  }
+
+  void createCircle() {
+    Color color = Colors.red.withValues(alpha: .7);
+    Circle circle = Circle(
+      strokeColor: color,
+      radius: 1000,
+      fillColor: color,
+
+      circleId: CircleId('naesha'),
+      center: LatLng(31.105580602929177, 30.943923665823245),
+    );
+    circles.add(circle);
   }
 }
 
