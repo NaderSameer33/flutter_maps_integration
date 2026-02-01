@@ -4,6 +4,8 @@ import 'package:flutter_google_maps_intgration/models/map_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 
+import 'package:location/location.dart';
+
 class GoogleMapItem extends StatefulWidget {
   const GoogleMapItem({super.key});
 
@@ -14,6 +16,7 @@ class GoogleMapItem extends StatefulWidget {
 class _GoogleMapItemState extends State<GoogleMapItem> {
   late CameraPosition cameraPosition;
   late GoogleMapController _controller;
+  final location = Location();
 
   String mapStyle = '';
   Set<Marker> markers = {};
@@ -24,6 +27,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   @override
   void initState() {
     super.initState();
+    checkLocationServicesAndRequest();
     createPlyLine();
     createMarker();
     createCircle();
@@ -156,6 +160,42 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
       center: LatLng(31.105580602929177, 30.943923665823245),
     );
     circles.add(circle);
+  }
+
+  Future<void> checkLocationServicesAndRequest() async {
+    bool isEnableLocation = await location.serviceEnabled();
+    if (!isEnableLocation) {
+      bool isEnableLocation = await location.requestService();
+      if (!isEnableLocation) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              'من فضل قم بتفعيل خدمه الموقع من اعدادات هاتفك ',
+            ),
+          ),
+        );
+      }
+    }
+  checkLocationPremetions(); 
+  }
+
+  Future<void> checkLocationPremetions() async {
+     PermissionStatus  permissionStatus  = await   location.hasPermission(); 
+     if (permissionStatus == PermissionStatus.denied){ 
+      var permissionStatus = await location.requestPermission(); 
+      if(permissionStatus != PermissionStatus.granted){
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              'من فضلك قم بتفعيل الاذونات لتشغيل خدمه تتبع موقعك'
+             ),
+          ),
+        );
+      }
+     }
+      
   }
 }
 
