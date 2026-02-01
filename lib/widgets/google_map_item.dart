@@ -36,10 +36,27 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     setState(() {});
   }
 
-  void createMarker() {
+  Future<BitmapDescriptor> createCustomMarker() async {
+    final customMarker = await BitmapDescriptor.asset(
+      ImageConfiguration(
+        size: Size(20, 20),
+        platform: TargetPlatform.android,
+        devicePixelRatio: 10,
+      ),
+      'assets/images/marker2.png',
+    );
+    return customMarker;
+  }
+
+  void createMarker() async {
+    var markerIcon = await createCustomMarker();
     var myMarker = list
         .map(
           (e) => Marker(
+            icon: markerIcon,
+            infoWindow: InfoWindow(
+              title: e.name,
+            ),
             markerId: MarkerId(e.id),
             position: e.latLng,
           ),
