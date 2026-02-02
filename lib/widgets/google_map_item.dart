@@ -21,6 +21,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   Set<Polyline> polylines = {};
   Set<Polygon> polygons = {};
   Set<Circle> circles = {};
+  bool isFirstCall = true;
 
   @override
   void initState() {
@@ -33,7 +34,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     createPolygon();
     upDataMyLocation();
     cameraPosition = CameraPosition(
-      zoom: 16,
+      zoom: 1,
       target: LatLng(31.105580602929177, 30.943923665823245),
     );
   }
@@ -161,22 +162,23 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     circles.add(circle);
   }
 
- void setLocationMarker (LocationData locationData){ 
-  var marker = Marker(
-          markerId: MarkerId('currentPostion'),
-          position: LatLng(locationData.latitude!, locationData.longitude!),
-        );
-        markers.add(marker);
-        setState(
-          () {},
-        ); // todo to updata a ui for a marker  animation camera not allowed to updata a ui
- }
+  void setLocationMarker(LocationData locationData) {
+    var marker = Marker(
+      markerId: MarkerId('currentPostion'),
+      position: LatLng(locationData.latitude!, locationData.longitude!),
+    );
+    markers.add(marker);
+    setState(
+      () {},
+    ); // todo to updata a ui for a marker  animation camera not allowed to updata a ui
+  }
+
   Future<void> upDataMyLocation() async {
     await _locationServices.checkLocationServicesAndRequest();
     bool isPermision = await _locationServices.checkLocationPremetions();
     if (isPermision) {
       _locationServices.getRealTimeLocationServiec((locationData) {
-       setLocationMarker(locationData); 
+        setLocationMarker(locationData);
 
         upDataLocationStream(locationData);
       });
@@ -184,11 +186,22 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   }
 
   void upDataLocationStream(LocationData locationData) {
-        _controller?.animateCamera(
-      CameraUpdate.newLatLng(
-        LatLng(locationData.latitude!, locationData.longitude!),
-      ),
+    CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(locationData.latitude!, locationData.longitude!),
+      zoom: 17,
     );
+    if (isFirstCall) {
+      _controller?.animateCamera(
+        CameraUpdate.newCameraPosition(cameraPosition),
+      );
+      isFirstCall = false;
+    } else {
+      _controller?.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(locationData.latitude!, locationData.longitude!),
+        ),
+      );
+    }
   }
 }
 
