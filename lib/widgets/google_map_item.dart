@@ -12,7 +12,7 @@ class GoogleMapItem extends StatefulWidget {
 
 class _GoogleMapItemState extends State<GoogleMapItem> {
   late CameraPosition cameraPosition;
-  late GoogleMapController _controller;
+  GoogleMapController? _controller;
   final location = Location();
 
   String mapStyle = '';
@@ -31,7 +31,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     createPolygon();
     upDataMyLocation();
     cameraPosition = CameraPosition(
-      zoom: 13,
+      zoom: 16,
       target: LatLng(31.105580602929177, 30.943923665823245),
     );
   }
@@ -69,7 +69,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   }
 
   Future<void> moveToNabrou() async {
-    await _controller.animateCamera(
+    await _controller!.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           zoom: 16,
@@ -98,7 +98,16 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
 
   void getLoactionData() {
     location.onLocationChanged.listen((locationData) {
-      _controller.animateCamera(
+      var marker = Marker(
+        markerId: MarkerId('currentPostion'),
+        position: LatLng(locationData.latitude!, locationData.longitude!),
+      );
+      markers.add(marker);
+      setState(
+        () {},
+      ); // todo to updata a ui for a marker  animation camera not allowed to updata a ui
+
+      _controller?.animateCamera(
         CameraUpdate.newLatLng(
           LatLng(locationData.latitude!, locationData.longitude!),
         ),
