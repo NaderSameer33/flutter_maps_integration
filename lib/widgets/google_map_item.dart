@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps_intgration/models/map_model.dart';
+import 'package:flutter_google_maps_intgration/utils/location_services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -13,7 +14,7 @@ class GoogleMapItem extends StatefulWidget {
 class _GoogleMapItemState extends State<GoogleMapItem> {
   late CameraPosition cameraPosition;
   GoogleMapController? _controller;
-  final location = Location();
+  late LocationServices _locationServices;
 
   String mapStyle = '';
   Set<Marker> markers = {};
@@ -24,6 +25,7 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   @override
   void initState() {
     super.initState();
+    _locationServices = LocationServices();
     createPlyLine();
     createMarker();
     createCircle();
@@ -96,25 +98,6 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     polylines.addAll(polyLineData);
   }
 
-  void getLoactionData() {
-    location.onLocationChanged.listen((locationData) {
-      var marker = Marker(
-        markerId: MarkerId('currentPostion'),
-        position: LatLng(locationData.latitude!, locationData.longitude!),
-      );
-      markers.add(marker);
-      setState(
-        () {},
-      ); // todo to updata a ui for a marker  animation camera not allowed to updata a ui
-
-      _controller?.animateCamera(
-        CameraUpdate.newLatLng(
-          LatLng(locationData.latitude!, locationData.longitude!),
-        ),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,49 +161,34 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
     circles.add(circle);
   }
 
-  Future<void> checkLocationServicesAndRequest() async {
-    bool isEnableLocation = await location.serviceEnabled();
-    if (!isEnableLocation) {
-      bool isEnableLocation = await location.requestService();
-      if (!isEnableLocation) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text(
-              'من فضل قم بتفعيل خدمه الموقع من اعدادات هاتفك ',
-            ),
-          ),
+ void setLocationMarker (LocationData locationData){ 
+  var marker = Marker(
+          markerId: MarkerId('currentPostion'),
+          position: LatLng(locationData.latitude!, locationData.longitude!),
         );
-      }
-    }
-  }
-
-  Future<bool> checkLocationPremetions() async {
-    PermissionStatus permissionStatus = await location.hasPermission();
-    if (permissionStatus == PermissionStatus.denied) {
-      var permissionStatus = await location.requestPermission();
-      if (permissionStatus == PermissionStatus.deniedForever) {
-        return false;
-      }
-      if (permissionStatus != PermissionStatus.granted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('من فضلك قم بتفعيل الاذونات لتشغيل خدمه تتبع موقعك'),
-          ),
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
+        markers.add(marker);
+        setState(
+          () {},
+        ); // todo to updata a ui for a marker  animation camera not allowed to updata a ui
+ }
   Future<void> upDataMyLocation() async {
-    await checkLocationServicesAndRequest();
-    bool isPermision = await checkLocationPremetions();
+    await _locationServices.checkLocationServicesAndRequest();
+    bool isPermision = await _locationServices.checkLocationPremetions();
     if (isPermision) {
-      getLoactionData();
+      _locationServices.getRealTimeLocationServiec((locationData) {
+       setLocationMarker(locationData); 
+
+        upDataLocationStream(locationData);
+      });
     }
+  }
+
+  void upDataLocationStream(LocationData locationData) {
+        _controller?.animateCamera(
+      CameraUpdate.newLatLng(
+        LatLng(locationData.latitude!, locationData.longitude!),
+      ),
+    );
   }
 }
 
