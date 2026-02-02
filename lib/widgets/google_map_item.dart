@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_google_maps_intgration/models/map_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:ui' as ui;
-
 import 'package:location/location.dart';
 
 class GoogleMapItem extends StatefulWidget {
@@ -27,12 +24,12 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
   @override
   void initState() {
     super.initState();
-    checkLocationServicesAndRequest();
     createPlyLine();
     createMarker();
     createCircle();
     createMapStyle();
     createPolygon();
+    upDataMyLocation();
     cameraPosition = CameraPosition(
       zoom: 13,
       target: LatLng(31.105580602929177, 30.943923665823245),
@@ -97,6 +94,16 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
         )
         .toSet();
     polylines.addAll(polyLineData);
+  }
+
+  void getLoactionData() {
+    location.onLocationChanged.listen((locationData) {
+      _controller.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(locationData.latitude!, locationData.longitude!),
+        ),
+      );
+    });
   }
 
   @override
@@ -177,25 +184,34 @@ class _GoogleMapItemState extends State<GoogleMapItem> {
         );
       }
     }
-  checkLocationPremetions(); 
   }
 
-  Future<void> checkLocationPremetions() async {
-     PermissionStatus  permissionStatus  = await   location.hasPermission(); 
-     if (permissionStatus == PermissionStatus.denied){ 
-      var permissionStatus = await location.requestPermission(); 
-      if(permissionStatus != PermissionStatus.granted){
-         ScaffoldMessenger.of(context).showSnackBar(
+  Future<bool> checkLocationPremetions() async {
+    PermissionStatus permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.denied) {
+      var permissionStatus = await location.requestPermission();
+      if (permissionStatus == PermissionStatus.deniedForever) {
+        return false;
+      }
+      if (permissionStatus != PermissionStatus.granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.red,
-            content: Text(
-              'من فضلك قم بتفعيل الاذونات لتشغيل خدمه تتبع موقعك'
-             ),
+            content: Text('من فضلك قم بتفعيل الاذونات لتشغيل خدمه تتبع موقعك'),
           ),
         );
+        return false;
       }
-     }
-      
+    }
+    return true;
+  }
+
+  Future<void> upDataMyLocation() async {
+    await checkLocationServicesAndRequest();
+    bool isPermision = await checkLocationPremetions();
+    if (isPermision) {
+      getLoactionData();
+    }
   }
 }
 
