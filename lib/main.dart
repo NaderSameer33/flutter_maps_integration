@@ -1,7 +1,5 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_google_maps_intgration/widgets/google_map_item.dart';
+import 'package:flutter_google_maps_intgration/widgets/root_track_item.dart';
 
 void main() {
   runApp(const FlutterGoogleMapsIntegration());
@@ -25,8 +23,9 @@ class _FlutterGoogleMapsIntegrationState
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body:GoogleMapItem()
+        body: RootTrackItem(),
 
+        //GoogleMapItem()
       ),
     );
   }
