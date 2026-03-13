@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps_intgration/widgets/root_track_item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPreferences.getInstance();
+
   runApp(const FlutterGoogleMapsIntegration());
 }
 
-class FlutterGoogleMapsIntegration extends StatefulWidget {
+class FlutterGoogleMapsIntegration extends StatelessWidget {
   const FlutterGoogleMapsIntegration({super.key});
 
-  @override
-  State<FlutterGoogleMapsIntegration> createState() =>
-      _FlutterGoogleMapsIntegrationState();
-}
-
-class _FlutterGoogleMapsIntegrationState
-    extends State<FlutterGoogleMapsIntegration> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,15 +20,10 @@ class _FlutterGoogleMapsIntegrationState
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: RootTrackItem(),
+        body: FlutterGoogleTracking(),
 
         //GoogleMapItem()
       ),
     );
   }
 }
-
-// location services request for enable services 
-// request premstion from a user 
-//  get location 
-// display  it

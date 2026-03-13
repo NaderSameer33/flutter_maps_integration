@@ -1,0 +1,26 @@
+{
+"place_id": "321632190713",
+"osm_id": "4474340",
+"osm_type": "relation",
+"licence": "https://locationiq.com/attribution",
+"lat": "36.10035435",
+"lon": "4.47157507",
+"boundingbox": [
+"35.98536",
+"36.2153306",
+"4.3300216",
+"4.5809292"
+],
+"class": "boundary",
+"type": "administrative",
+"display_name": "Mansoura, Mansourah District, Bordj Bou Arreridj, Algeria",
+"display_place": "Mansoura",
+"display_address": "Mansourah District, Bordj Bou Arreridj, Algeria",
+"address": {
+"name": "Mansoura",
+"county": "Mansourah District",
+"state": "Bordj Bou Arreridj",
+"country": "Algeria",
+"country_code": "dz"
+}
+}
